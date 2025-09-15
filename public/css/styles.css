@@ -4,3 +4,101 @@
 *:after {
   box-sizing: border-box;
 }
+/*  
+
+:root{
+  --primary-color: #E50914;
+  --secondary-color: #FFD700;
+  --font-color: #F5F5F5;
+
+  --background-color: #f4f4f4;
+  --border-color: #ccc;
+}
+
+html{
+  background-image: url('../images/site/small_check.jpg');
+  background-color: rgba(30, 30, 30, 0.6);
+  background-blend-mode: multiply; 
+  background-size: cover; 
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  margin-left: 6rem;
+  margin-right: 6rem;
+  margin-top: 3rem;
+  padding: 2.5rem;
+  background-color: whitesmoke;
+  border: 5px black solid;
+  border-radius: 10px;
+  
+}
+
+nav ul {
+  list-style: none;
+  padding: 1rem;
+  background-color: var(--primary-color);
+  
+}
+
+nav ul li {
+  display: inline;
+  margin-right: 15px;
+  font-weight: bold;
+}
+nav ul li:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+header a {
+  text-decoration: none;
+  color: var(--secondary-color);
+}
+
+header span a{
+  text-align: start;
+  font-size: larger;
+  font-weight: bold;
+}
+
+
+div img {
+  width: 100%;
+  height: auto;
+  align-items:center;
+  align-content: center;
+}
+
+#own-today{
+  top: 50%;
+  left: 15%;
+  position: absolute;
+  max-width: 15rem;
+  padding: 1rem;
+  height: auto;
+  font-size: auto;
+  background-color: rgba(30, 30, 30, 0.6);
+}
+
+#own-today img{
+  max-width: 80%;
+  height: auto;
+  align-items:center;
+}
+
+.content img {
+  width: 10%;
+  height: auto;
+  align-items:center;
+  align-content: center;
+  border: 5px black solid;
+  border-radius: 10px;
+}
+
+
+*/
+
+
+
+
