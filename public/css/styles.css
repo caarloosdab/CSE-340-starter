@@ -33,7 +33,7 @@ body > div {
   color: #000;
 }
 
-.nav-list {
+nav ul {
   display: flex;
   list-style: none;
   padding: 0;
@@ -41,11 +41,11 @@ body > div {
   background: #000;
 }
 
-.nav-list li {
+nav li {
   flex: 1;
 }
 
-.nav-list a {
+nav a {
   display: block;
   padding: 0.75rem;
   color: #fff;
@@ -53,7 +53,7 @@ body > div {
   text-align: center;
 }
 
-.nav-list a:hover {
+nav a:hover {
   background: #555;
 }
 
