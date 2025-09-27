@@ -1,5 +1,6 @@
 const { Pool } = require("pg")
 require("dotenv").config()
+const { cleanEnvString } = require("../utilities/env")
 /* ***************
  * Connection Pool
  * SSL Object needed for local testing of app
@@ -19,17 +20,18 @@ if (process.env.NODE_ENV == "development") {
 // during development
 const isDevelopment = process.env.NODE_ENV === "development"
 
-const sanitizeEnv = (value) => {
-  if (typeof value !== "string") return value
-  const trimmed = value.trim()
-  return trimmed.replace(/^['"]+|['"]+$/g, "")
-}
-
 const poolConfig = {
-  connectionString: sanitizeEnv(process.env.DATABASE_URL),
+   connectionString: cleanEnvString(process.env.DATABASE_URL),
   ssl: {
     rejectUnauthorized: false,
   },
+}
+
+if (!poolConfig.connectionString) {
+  throw new Error(
+    "DATABASE_URL environment variable is missing or empty. " +
+      "Verify your Render service has the correct connection string configured."
+  )
 }
 
 const pool = new Pool(poolConfig)

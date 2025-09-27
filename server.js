@@ -12,6 +12,7 @@ const app = express()
 const staticRoutes = require("./routes/static")
 const baseController = require("./controllers/baseControllers")
 const util = require("./utilities") // <-- needed for util.getNav()
+const { cleanEnvString } = require("./utilities/env")
 
 /* ***********************
  * View Engine and Templates
@@ -74,14 +75,43 @@ app.use(async (err, req, res, next) => {
  * Local Server Information
  * Values from .env (environment) file
  *************************/
-const sanitizeEnv = (value, fallback = value) => {
-  if (typeof value !== "string") return fallback
-  const trimmed = value.trim()
-  return trimmed.replace(/^['"]+|['"]+$/g, "") || fallback
+
+
+const resolvePort = () => {
+  const cleaned = cleanEnvString(process.env.PORT)
+  if (!cleaned) return 5500
+
+  const parsed = Number.parseInt(cleaned, 10)
+  if (Number.isNaN(parsed)) {
+    console.warn(`Invalid PORT value "${process.env.PORT}". Falling back to 5500.`)
+    return 5500
+  }
+
+  return parsed
 }
 
-const port = sanitizeEnv(process.env.PORT) || 5500
-const host = sanitizeEnv(process.env.HOST, "0.0.0.0")
+const resolveHost = () => {
+  const cleaned = cleanEnvString(process.env.HOST)
+  if (!cleaned) return "0.0.0.0"
+
+  if (/^['"`]/.test(process.env.HOST || "")) {
+    console.warn(`HOST contained quotes. Using sanitized value "${cleaned}".`)
+  }
+
+  if (/^(localhost|127\.0\.0\.1)$/i.test(cleaned)) {
+    console.warn(
+      `HOST value "${cleaned}" only binds to the loopback interface. Defaulting to 0.0.0.0 ` +
+      "so Render and other hosts can reach the server."
+    )
+    return "0.0.0.0"
+  }
+
+  return cleaned
+}
+
+const port = resolvePort()
+const host = resolveHost()
+
 
 
 /* ***********************
