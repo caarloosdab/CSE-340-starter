@@ -75,7 +75,8 @@ app.use(async (err, req, res, next) => {
  * Values from .env (environment) file
  *************************/
 const port = process.env.PORT || 5500
-const host = process.env.HOST || "0.0.0.0"
+const host = (process.env.HOST || "0.0.0.0").replace(/^['"]+|['"]+$/g, "")
+
 
 /* ***********************
  * Log statement to confirm server operation
