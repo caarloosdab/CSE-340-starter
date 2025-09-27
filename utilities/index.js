@@ -1,5 +1,22 @@
 const invModel = require("../models/inventory-model")
 const Util = {}
+function resolveAssetPath(assetPath) {
+  if (!assetPath) {
+    return ""
+  }
+
+  let normalized = assetPath.trim().replace(/\\/g, "/")
+
+  if (!normalized.startsWith("/")) {
+    normalized = `/${normalized}`
+  }
+
+  normalized = normalized.replace(/\/+/g, "/")
+  normalized = normalized.replace(/\/images\/vehicles(?!\/)/, "/images/vehicles/")
+
+  return normalized
+}
+
 const usdFormatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -70,7 +87,8 @@ Util.buildVehicleDetail = function (vehicle) {
   const vehicleName = `${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}`
   const formattedPrice = usdFormatter.format(vehicle.inv_price)
   const formattedMiles = numberFormatter.format(vehicle.inv_miles)
-  const imageUrl = resolveAssetPath(vehicle.inv_thumbnai)
+  const imageUrl = resolveAssetPath(vehicle.inv_image)
+
 
   return `<article class="vehicle-detail" aria-labelledby="vehicle-detail-title">
     <figure class="vehicle-detail__media">
@@ -95,7 +113,7 @@ Util.buildVehicleDetail = function (vehicle) {
  * Wrap other function in this for 
  * General Error Handling
  **************************************** */
-Util.handleErrors = fn => (req, res, next) => 
+Util.handleErrors = (fn) => (req, res, next) => 
   Promise.resolve(fn(req, res, next)).catch(next)
 
 module.exports = Util
