@@ -29,6 +29,9 @@ app.use(staticRoutes)
 // Index route
 app.get("/", util.handleErrors(baseController.buildHome))
 
+// Intentional error route for testing middleware
+app.get("/error", util.handleErrors(baseController.triggerError))
+
 // Inventory routes
 app.use("/inv", inventoryRoute)
 
@@ -53,13 +56,17 @@ app.use(async (req, res, next) => {
  * Place after all other middleware
  *************************/
 app.use(async (err, req, res, next) => {
-  let nav = await utilities.getNav()
+  const nav = await util.getNav()
+  const status = err.status || 500
   console.error(`Error at: "${req.originalUrl}": ${err.message}`)
-  if(err.status == 404){ message = err.message} else {message = 'Oh no! There was a crash. Maybe try a different route?'}
-  res.render("errors/error", {
-    title: err.status || 'Server Error',
+  const message = status === 404 && err.message
+    ? err.message
+    : "Oh no! There was a crash. Maybe try a different route?"
+
+  res.status(status).render("errors/error", {
+    title: status === 500 ? "500 - Server Error" : `${status} - ${err.name || "Error"}`,  
     message,
-    nav
+    nav,
   })
 })
 

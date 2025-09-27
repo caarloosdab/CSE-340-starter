@@ -6,4 +6,10 @@ baseController.buildHome = async function(req, res){
   res.render("index", {title: "Home", nav})
 }
 
+baseController.triggerError = async function(req, res){
+  const error = new Error("This is a forced error.")
+  error.status = 500
+  throw error
+}
+
 module.exports = baseController

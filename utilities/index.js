@@ -1,5 +1,10 @@
 const invModel = require("../models/inventory-model")
 const Util = {}
+const usdFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+})
+const numberFormatter = new Intl.NumberFormat("en-US")
 
 /* ************************
  * Constructs the nav HTML unordered list
@@ -24,11 +29,73 @@ Util.getNav = async function (req, res, next) {
   return list
 }
 
+/* ************************
+ * Build the classification view grid
+ ************************** */
+Util.buildClassificationGrid = function (data) {
+  if (!data || !data.length) {
+    return '<p class="notice">Sorry, no matching vehicles could be found.</p>'
+  }
+
+  let grid = '<ul class="inv-display">'
+
+  data.forEach((vehicle) => {
+    const vehicleName = `${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}`
+
+    grid += `<li class="inv-card">
+      <a class="inv-card__link" href="/inv/detail/${vehicle.inv_id}" aria-label="View details for the ${vehicleName}">
+        <figure class="inv-card__figure">
+          <img src="${vehicle.inv_thumbnail}" alt="Thumbnail of ${vehicleName}">
+          <figcaption>${vehicleName}</figcaption>
+        </figure>
+      </a>
+      <div class="inv-card__details">
+        <p class="inv-card__price">${usdFormatter.format(vehicle.inv_price)}</p>
+      </div>
+    </li>`
+  })
+
+  grid += "</ul>"
+  return grid
+}
+
+/* ************************
+ * Build vehicle detail HTML
+ ************************** */
+Util.buildVehicleDetail = function (vehicle) {
+  if (!vehicle) {
+    return '<p class="notice">Vehicle details are currently unavailable.</p>'
+  }
+
+  const vehicleName = `${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}`
+  const formattedPrice = usdFormatter.format(vehicle.inv_price)
+  const formattedMiles = numberFormatter.format(vehicle.inv_miles)
+  const imageUrl = resolveAssetPath(vehicle.inv_thumbnai)
+
+  return `<article class="vehicle-detail" aria-labelledby="vehicle-detail-title">
+    <figure class="vehicle-detail__media">
+      <img src="${imageUrl}" alt="Image of ${vehicleName}" loading="lazy">
+      <figcaption class="visually-hidden">${vehicleName}</figcaption>
+    </figure>
+    <div class="vehicle-detail__content">
+      <h2 id="vehicle-detail-title">${vehicleName}</h2>
+      <p class="vehicle-detail__price"><span class="label">Price:</span> ${formattedPrice}</p>
+      <p class="vehicle-detail__miles"><span class="label">Mileage:</span> ${formattedMiles} miles</p>
+      <p class="vehicle-detail__year"><span class="label">Model Year:</span> ${vehicle.inv_year}</p>
+      <p class="vehicle-detail__color"><span class="label">Exterior Color:</span> ${vehicle.inv_color}</p>
+      <p class="vehicle-detail__classification"><span class="label">Classification:</span> ${vehicle.classification_name}</p>
+      <p class="vehicle-detail__description">${vehicle.inv_description}</p>
+    </div>
+  </article>`
+}
+
+
 /* ****************************************
  * Middleware For Handling Errors
  * Wrap other function in this for 
  * General Error Handling
  **************************************** */
-Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
+Util.handleErrors = fn => (req, res, next) => 
+  Promise.resolve(fn(req, res, next)).catch(next)
 
 module.exports = Util
