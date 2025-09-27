@@ -19,8 +19,14 @@ if (process.env.NODE_ENV == "development") {
 // during development
 const isDevelopment = process.env.NODE_ENV === "development"
 
+const sanitizeEnv = (value) => {
+  if (typeof value !== "string") return value
+  const trimmed = value.trim()
+  return trimmed.replace(/^['"]+|['"]+$/g, "")
+}
+
 const poolConfig = {
-  connectionString: process.env.DATABASE_URL,
+  connectionString: sanitizeEnv(process.env.DATABASE_URL),
   ssl: {
     rejectUnauthorized: false,
   },

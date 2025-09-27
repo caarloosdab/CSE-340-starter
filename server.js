@@ -74,8 +74,14 @@ app.use(async (err, req, res, next) => {
  * Local Server Information
  * Values from .env (environment) file
  *************************/
-const port = process.env.PORT || 5500
-const host = (process.env.HOST || "0.0.0.0").replace(/^['"]+|['"]+$/g, "")
+const sanitizeEnv = (value, fallback = value) => {
+  if (typeof value !== "string") return fallback
+  const trimmed = value.trim()
+  return trimmed.replace(/^['"]+|['"]+$/g, "") || fallback
+}
+
+const port = sanitizeEnv(process.env.PORT) || 5500
+const host = sanitizeEnv(process.env.HOST, "0.0.0.0")
 
 
 /* ***********************
