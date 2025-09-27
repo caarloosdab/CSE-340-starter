@@ -58,11 +58,12 @@ Util.buildClassificationGrid = function (data) {
 
   data.forEach((vehicle) => {
     const vehicleName = `${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}`
+    const imageUrl = resolveAssetPath(vehicle.inv_thumbnail)
 
     grid += `<li class="inv-card">
       <a class="inv-card__link" href="/inv/detail/${vehicle.inv_id}" aria-label="View details for the ${vehicleName}">
         <figure class="inv-card__figure">
-          <img src="${vehicle.inv_thumbnail}" alt="Thumbnail of ${vehicleName}">
+          <img src="${imageUrl}" alt="Thumbnail of ${vehicleName}">
           <figcaption>${vehicleName}</figcaption>
         </figure>
       </a>

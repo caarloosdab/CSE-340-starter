@@ -42,7 +42,7 @@ invCont.buildByInventoryId = async function (req, res, next) {
   const detail = utilities.buildVehicleDetail(vehicleData)
 
   res.render("./inventory/detail", {
-    title: `$(vehicle.inv_year} ${vehicleName}`,
+    title: `${vehicleData.inv_year} ${vehicleName}`,
     nav,
     detail,
   })
