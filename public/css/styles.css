@@ -472,6 +472,16 @@ main {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+.form-group input:required:invalid,
+.form-group input:focus:invalid {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+}
+
+.form-group input:required:valid {
+  border-color: #16a34a;
+}
+
 .form-group input:focus {
   outline: none;
   border-color: #0ab;
@@ -562,6 +572,14 @@ main {
   color: #475569;
   line-height: 1.5;
 }
+
+.password-requirements {
+  padding: 0.75rem 1rem;
+  background-color: #f1f5f9;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+}
+
 
 @media (max-width: 480px) {
   .auth-card {

@@ -8,7 +8,7 @@
     </div>
   <% } %>
 
-  <form class="auth-form" action="/account/register" method="post" novalidate>
+  <form class="auth-form" action="/account/register" method="post">
     <div class="form-group">
       <label for="account_firstname">First name</label>
       <input
@@ -50,9 +50,9 @@
           id="account_password"
           name="account_password"
           autocomplete="new-password"
-          minlength="12"
           aria-describedby="password-hint"
           required
+          pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$"
         >
         <button
           type="button"
@@ -63,9 +63,9 @@
           Show
         </button>
       </div>
-      <p id="password-hint" class="form-hint">
-        Passwords must be at least 12 characters and include a capital letter, number, and special character.
-      </p>
+      <div id="password-hint" class="form-hint password-requirements" role="note">
+        Passwords must be at least 12 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+      </div>
     </div>
 
     <button class="button-primary" type="submit">Create account</button>

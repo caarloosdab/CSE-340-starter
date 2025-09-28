@@ -8,7 +8,7 @@
     </div>
   <% } %>
 
-  <form class="auth-form" action="/account/login" method="post" novalidate>
+  <form class="auth-form" action="/account/login" method="post">
     <div class="form-group">
       <label for="account_email">Email address</label>
       <input
@@ -28,8 +28,13 @@
         id="account_password"
         name="account_password"
         autocomplete="current-password"
+        aria-describedby="login-password-hint"
         required
+         pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$"
       >
+       <div id="login-password-hint" class="form-hint password-requirements" role="note">
+        Passwords must be at least 12 characters and contain at least one uppercase letter, one lowercase letter, one number, and one special character.
+      </div>
     </div>
 
     <button class="button-primary" type="submit">Login</button>
