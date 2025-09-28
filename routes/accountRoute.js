@@ -17,3 +17,6 @@ router.get(
 )
 
 module.exports = router
+
+// Process login attempt
+router.post('/register', utilities.handleErrors(accountController.registerAccount))
