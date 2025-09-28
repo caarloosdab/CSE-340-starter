@@ -1,0 +1,54 @@
+<section class="form-card" aria-labelledby="add-classification-title">
+  <!-- This view collects the classification name and explains the validation rules -->
+  <h1 id="add-classification-title"><%= title %></h1>
+
+  <% const flashMessages = messages(); %>
+  <% if (flashMessages.trim()) { %>
+    <div class="notice" role="status" aria-live="polite">
+      <%- flashMessages %>
+    </div>
+  <% } %>
+
+  <% if (errors) { %>
+    <ul class="notice" role="alert">
+      <% errors.array().forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form action="/inv/add-classification" method="post" class="form" novalidate>
+    <div class="form-group">
+      <label for="classification_name">Classification name</label>
+      <input
+        type="text"
+        id="classification_name"
+        name="classification_name"
+        required
+        pattern="^[A-Za-z0-9]+$"
+        aria-describedby="classification-help"
+        value="<%= locals.classification_name %>"
+      >
+      <p id="classification-help" class="form-hint" role="note">
+        Use only letters and numbers. Spaces or special characters are not allowed.
+      </p>
+    </div>
+
+    <button class="button-primary" type="submit">Save classification</button>
+  </form>
+</section>
+
+<script>
+  // Provide immediate feedback to help keep the classification name in the proper format.
+  (function () {
+    const input = document.getElementById("classification_name")
+    if (!input) return
+
+    input.addEventListener("input", () => {
+      const sanitized = input.value.replace(/[^A-Za-z0-9]/g, "")
+      if (sanitized !== input.value) {
+        input.value = sanitized
+      }
+    })
+  })()
+</script>

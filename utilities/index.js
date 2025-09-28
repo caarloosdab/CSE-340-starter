@@ -1,10 +1,15 @@
 const invModel = require("../models/inventory-model")
 const Util = {}
+
+/**
+ * Normalize an asset path so all image URLs resolve correctly on every OS.
+ */
 function resolveAssetPath(assetPath) {
   if (!assetPath) {
     return ""
   }
 
+  // Trim whitespace and convert Windows style paths to use forward slashes.
   let normalized = assetPath.trim().replace(/\\/g, "/")
 
   if (!normalized.startsWith("/")) {
@@ -26,8 +31,8 @@ const numberFormatter = new Intl.NumberFormat("en-US")
 /* ************************
  * Constructs the nav HTML unordered list
  ************************** */
-Util.getNav = async function (req, res, next) {
-  let data = await invModel.getClassifications()
+Util.getNav = async function () {
+  const data = await invModel.getClassifications()
   let list = "<ul>"
   list += '<li><a href="/" title="Home page">Home</a></li>'
   data.rows.forEach((row) => {
@@ -45,6 +50,30 @@ Util.getNav = async function (req, res, next) {
   list += "</ul>"
   return list
 }
+
+/* ************************
+ * Build a <select> element filled with classifications
+ * Optional parameter keeps the selection "sticky" after validation errors
+ ************************** */
+Util.buildClassificationList = async function (classification_id = null) {
+  const data = await invModel.getClassifications()
+  let classificationList =
+    '<select name="classification_id" id="classificationList" required>'
+  classificationList += "<option value=''>Choose a Classification</option>"
+  data.rows.forEach((row) => {
+    classificationList += '<option value="' + row.classification_id + '"'
+    if (
+      classification_id != null &&
+      Number.parseInt(classification_id, 10) === row.classification_id
+    ) {
+      classificationList += " selected"
+    }
+    classificationList += ">" + row.classification_name + "</option>"
+  })
+  classificationList += "</select>"
+  return classificationList
+}
+
 
 /* ************************
  * Build the classification view grid

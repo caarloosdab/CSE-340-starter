@@ -3,8 +3,9 @@ const pool = require("../database/")
 /* ***************************
  *  Get all classification data
  * ************************** */
-async function getClassifications(){
-  return await pool.query("SELECT * FROM public.classification ORDER BY classification_name")
+async function getClassifications() {
+  return await pool.query(
+    "SELECT * FROM public.classification ORDER BY classification_name")
 }
 
 /* ***************************
@@ -13,15 +14,16 @@ async function getClassifications(){
 async function getInventoryByClassificationId(classification_id) {
   try {
     const data = await pool.query(
-      `SELECT * FROM public.inventory AS i 
-      JOIN public.classification AS c 
-      ON i.classification_id = c.classification_id 
+      `SELECT * FROM public.inventory AS i
+      JOIN public.classification AS c
+      ON i.classification_id = c.classification_id
       WHERE i.classification_id = $1`,
       [classification_id]
     )
     return data.rows
   } catch (error) {
-    console.error("getclassificationsbyid error " + error)
+    console.error("getClassificationsById error " + error)
+    throw error
   }
 }
 
@@ -31,20 +33,84 @@ async function getInventoryByClassificationId(classification_id) {
 async function getInventoryById(inventory_id) {
   try {
     const data = await pool.query(
-    `SELECT * FROM public.inventory AS i
+      `SELECT * FROM public.inventory AS i
     JOIN public.classification AS c
     ON i.classification_id = c.classification_id
     WHERE i.inv_id = $1`,
-    [inventory_id]
+      [inventory_id]
     )
     return data.rows[0]
   } catch (error) {
     console.error("getInventoryById error " + error)
+    throw error
   }
 }
 
+/* ***************************
+ *  Insert a new classification record
+ *  Returns the inserted row so the controller can update the UI immediately
+ * ************************** */
+async function createClassification(classification_name) {
+  try {
+    const sql =
+      "INSERT INTO public.classification (classification_name) VALUES ($1) RETURNING *"
+    const result = await pool.query(sql, [classification_name])
+    return result.rows[0]
+  } catch (error) {
+    console.error("createClassification error " + error)
+    throw error
+  }
+}
 
-module.exports = {getClassifications, 
+/* ***************************
+ *  Insert a new inventory record using named parameters
+ * ************************** */
+async function createInventory({
+  inv_make,
+  inv_model,
+  inv_year,
+  inv_description,
+  inv_image,
+  inv_thumbnail,
+  inv_price,
+  inv_miles,
+  inv_color,
+  classification_id,
+}) {
+  try {
+    const sql = `
+      INSERT INTO public.inventory
+        (inv_make, inv_model, inv_year, inv_description, inv_image,
+         inv_thumbnail, inv_price, inv_miles, inv_color, classification_id)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+      RETURNING *
+    `
+
+    const values = [
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_miles,
+      inv_color,
+      classification_id,
+    ]
+
+    const result = await pool.query(sql, values)
+    return result.rows[0]
+  } catch (error) {
+    console.error("createInventory error " + error)
+    throw error
+  }
+}
+
+module.exports = {
+  getClassifications, 
   getInventoryByClassificationId,
-  getInventoryById
-};
+  getInventoryById,
+  createClassification,
+  createInventory,
+}

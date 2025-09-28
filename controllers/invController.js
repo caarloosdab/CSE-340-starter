@@ -4,6 +4,149 @@ const utilities = require("../utilities/")
 const invCont = {}
 
 /* ***************************
+ *  Build inventory management view
+ * ************************** */
+invCont.buildManagement = async function (_req, res) {
+  const nav = await utilities.getNav()
+  res.render("./inventory/management", {
+    title: "Inventory Management",
+    nav,
+  })
+}
+
+/* ***************************
+ *  Build add classification view
+ * ************************** */
+invCont.buildAddClassification = async function (req, res) {
+  const nav = await utilities.getNav()
+  res.render("./inventory/add-classification", {
+    title: "Add New Classification",
+    nav,
+    errors: null,
+    classification_name:
+      (req.sanitizedClassification || {}).classification_name || "",
+  })
+}
+
+/* ***************************
+ *  Process new classification
+ * ************************** */
+invCont.createClassification = async function (req, res) {
+  const { classification_name } = req.body
+
+  try {
+    const newClassification = await invModel.createClassification(
+      classification_name
+    )
+
+    req.flash(
+      "notice",
+      `Successfully added the ${newClassification.classification_name} classification.`
+    )
+
+    const nav = await utilities.getNav()
+    return res.status(201).render("./inventory/management", {
+      title: "Inventory Management",
+      nav,
+    })
+  } catch (error) {
+    console.error("createClassification controller error", error)
+    req.flash(
+      "notice",
+      "Sorry, we could not add that classification. Please correct any issues and try again."
+    )
+
+    const nav = await utilities.getNav()
+    return res.status(500).render("./inventory/add-classification", {
+      title: "Add New Classification",
+      nav,
+      errors: {
+        array: () => [
+          { msg: "We ran into a problem saving the classification." },
+        ],
+      },
+      classification_name:
+        (req.sanitizedClassification || {}).classification_name || "",
+    })
+  }
+}
+
+/* ***************************
+ *  Build add inventory view
+ * ************************** */
+invCont.buildAddInventory = async function (req, res) {
+  const nav = await utilities.getNav()
+  const classificationList = await utilities.buildClassificationList(
+    (req.sanitizedInventory || {}).classification_id
+  )
+
+  res.render("./inventory/add-inventory", {
+    title: "Add New Vehicle",
+    nav,
+    classificationList,
+    errors: null,
+    ...(req.sanitizedInventory || {}),
+  })
+}
+
+/* ***************************
+ *  Process new inventory item
+ * ************************** */
+invCont.createInventory = async function (req, res) {
+  const inventoryData = {
+    inv_make: req.body.inv_make,
+    inv_model: req.body.inv_model,
+    inv_year: req.body.inv_year,
+    inv_description: req.body.inv_description,
+    inv_image: req.body.inv_image,
+    inv_thumbnail: req.body.inv_thumbnail,
+    inv_price: req.body.inv_price,
+    inv_miles: req.body.inv_miles,
+    inv_color: req.body.inv_color,
+    classification_id: req.body.classification_id,
+  }
+
+  try {
+    const newVehicle = await invModel.createInventory(inventoryData)
+
+    req.flash(
+      "notice",
+      `Successfully added the ${newVehicle.inv_year} ${newVehicle.inv_make} ${newVehicle.inv_model}.`
+    )
+
+    const nav = await utilities.getNav()
+    return res.status(201).render("./inventory/management", {
+      title: "Inventory Management",
+      nav,
+    })
+  } catch (error) {
+    console.error("createInventory controller error", error)
+    req.flash(
+      "notice",
+      "Sorry, we could not add that vehicle. Please correct any issues and try again."
+    )
+
+    const nav = await utilities.getNav()
+    const classificationList = await utilities.buildClassificationList(
+      req.body.classification_id
+    )
+
+    return res.status(500).render("./inventory/add-inventory", {
+      title: "Add New Vehicle",
+      nav,
+      classificationList,
+      errors: {
+        array: () => [
+          { msg: "We ran into a problem saving the vehicle." },
+        ],
+      },
+      ...(req.sanitizedInventory || {}),
+    })
+  }
+}
+
+
+/* ***************************
  *  Build inventory by classification view
  * ************************** */
 invCont.buildByClassificationId = async function (req, res, next) {
@@ -47,6 +190,5 @@ invCont.buildByInventoryId = async function (req, res, next) {
     detail,
   })
 }
-
 
 module.exports = invCont

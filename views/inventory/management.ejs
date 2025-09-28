@@ -1,0 +1,30 @@
+<section class="management" aria-labelledby="inventory-management-title">
+  <!-- The management view acts as the hub for inventory related tasks -->
+  <h1 id="inventory-management-title"><%= title %></h1>
+
+  <% const flashMessages = messages(); %>
+  <% if (flashMessages.trim()) { %>
+    <div class="notice" role="status" aria-live="polite">
+      <%- flashMessages %>
+    </div>
+  <% } %>
+
+  <p>
+    Use the links below to add new classifications or vehicles. Each link
+    follows the MVC flow: the router triggers the controller, which renders the
+    appropriate view.
+  </p>
+
+  <ul class="management__links">
+    <li>
+      <a class="button-primary" href="/inv/add-classification">
+        Add a new classification
+      </a>
+    </li>
+    <li>
+      <a class="button-secondary" href="/inv/add-inventory">
+        Add a new vehicle
+      </a>
+    </li>
+  </ul>
+</section>
