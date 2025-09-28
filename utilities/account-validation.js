@@ -1,48 +1,83 @@
 const utilities = require(".")
-const { body, validationResult } = require("express-validator")
 const validate = {}
+
+/**
+ * Escape HTML entities to avoid rendering issues when
+ * we send the sanitized values back to the template.
+ */
+function escapeHtml(value = "") {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
+function normalizeEmail(value = "") {
+  return value.trim().toLowerCase()
+}
+
+function isStrongPassword(value = "") {
+  if (value.length < 12) return false
+  const hasLower = /[a-z]/.test(value)
+  const hasUpper = /[A-Z]/.test(value)
+  const hasNumber = /[0-9]/.test(value)
+  const hasSymbol = /[^A-Za-z0-9]/.test(value)
+  return hasLower && hasUpper && hasNumber && hasSymbol
+}
+
 
 /*  **********************************
  *  Registration Data Validation Rules
  * ********************************* */
 validate.registationRules = () => {
   return [
-    // firstname is required and must be string
-    body("account_firstname")
-      .trim()
-      .escape()
-      .notEmpty()
-      .isLength({ min: 1 })
-      .withMessage("Please provide a first name."),
+    (req, _res, next) => {
+    const errors = []
 
-    // lastname is required and must be string
-    body("account_lastname")
-      .trim()
-      .escape()
-      .notEmpty()
-      .isLength({ min: 2 })
-      .withMessage("Please provide a last name."),
-    // valid email is required and cannot already exist in the DB
-    body("account_email")
-      .trim()
-      .escape()
-      .notEmpty()
-      .isEmail()
-      .normalizeEmail()
-      .withMessage("A valid email is required."),
+    const firstnameRaw = typeof req.body.account_firstname === "string" ? req.body.account_firstname : ""
+    const lastnameRaw = typeof req.body.account_lastname === "string" ? req.body.account_lastname : ""
+    const emailRaw = typeof req.body.account_email === "string" ? req.body.account_email : ""
+    const passwordRaw = typeof req.body.account_password === "string" ? req.body.account_password : ""
 
-      // password is required and must be strong password
-    body("account_password")
-      .trim()
-      .notEmpty()
-      .isStrongPassword({
-        minLength: 12,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 1,
-        minSymbols: 1,
-      })
-      .withMessage("Password does not meet requirements."),
+    const trimmedFirstname = firstnameRaw.trim()
+    const trimmedLastname = lastnameRaw.trim()
+    const normalizedEmail = normalizeEmail(emailRaw)
+    const account_firstname = escapeHtml(trimmedFirstname)
+    const account_lastname = escapeHtml(trimmedLastname)
+    const account_email = escapeHtml(normalizedEmail)
+    const account_password = passwordRaw.trim()
+
+    if (!account_firstname) {
+    errors.push({ msg: "Please provide a first name." })
+    }
+
+    if (!account_lastname || account_lastname.length < 2) {
+    errors.push({ msg: "Please provide a last name." })
+    }
+
+    if (!account_email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account_email)) {
+        errors.push({ msg: "A valid email is required." })
+    }
+
+    if (!account_password || !isStrongPassword(account_password)) {
+    errors.push({ msg: "Password does not meet requirements." })
+    }
+
+    req.sanitizedRegistration = {
+    account_firstname,
+    account_lastname,
+    account_email,
+    }
+    req.body.account_firstname = trimmedFirstname
+    req.body.account_lastname = trimmedLastname
+    req.body.account_email = normalizedEmail
+    req.validationErrors = errors
+
+    next()
+    },
+    
   ]
 }
 
@@ -50,21 +85,24 @@ validate.registationRules = () => {
  * Check data and return errors or continue to registration
  * ***************************** */
 validate.checkRegData = async (req, res, next) => {
-  const { account_firstname, account_lastname, account_email } = req.body
-  let errors = []
-  errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    let nav = await utilities.getNav()
-    res.render("account/register", {
-      errors,
-      title: "Registration",
-      nav,
-      account_firstname,
-      account_lastname,
-      account_email,
+    const errors = req.validationErrors || []
+
+  if (errors.length) {
+    const nav = await utilities.getNav()
+    const { account_firstname = "", account_lastname = "", account_email = "" } = req.sanitizedRegistration || {}
+
+    return res.render("account/register", {
+        errors: {
+            array: () => errors,
+        },
+        title: "Registration",
+        nav,
+        account_firstname,
+        account_lastname,
+        account_email,
     })
-    return
-  }
+    
+}
   next()
 }
 
