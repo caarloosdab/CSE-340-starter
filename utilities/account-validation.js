@@ -1,4 +1,5 @@
 const utilities = require(".")
+const accountModel = require("../models/account-model")
 const validate = {}
 
 /**
@@ -33,50 +34,92 @@ function isStrongPassword(value = "") {
  * ********************************* */
 validate.registationRules = () => {
   return [
-    (req, _res, next) => {
-    const errors = []
+    async (req, _res, next) => {
+      const errors = []
 
-    const firstnameRaw = typeof req.body.account_firstname === "string" ? req.body.account_firstname : ""
-    const lastnameRaw = typeof req.body.account_lastname === "string" ? req.body.account_lastname : ""
-    const emailRaw = typeof req.body.account_email === "string" ? req.body.account_email : ""
-    const passwordRaw = typeof req.body.account_password === "string" ? req.body.account_password : ""
+      const firstnameRaw = typeof req.body.account_firstname === "string" ? req.body.account_firstname : ""
+      const lastnameRaw = typeof req.body.account_lastname === "string" ? req.body.account_lastname : ""
+      const emailRaw = typeof req.body.account_email === "string" ? req.body.account_email : ""
+      const passwordRaw = typeof req.body.account_password === "string" ? req.body.account_password : ""
 
-    const trimmedFirstname = firstnameRaw.trim()
-    const trimmedLastname = lastnameRaw.trim()
-    const normalizedEmail = normalizeEmail(emailRaw)
-    const account_firstname = escapeHtml(trimmedFirstname)
-    const account_lastname = escapeHtml(trimmedLastname)
-    const account_email = escapeHtml(normalizedEmail)
-    const account_password = passwordRaw.trim()
+      const trimmedFirstname = firstnameRaw.trim()
+      const trimmedLastname = lastnameRaw.trim()
+      const normalizedEmail = normalizeEmail(emailRaw)
+      const account_firstname = escapeHtml(trimmedFirstname)
+      const account_lastname = escapeHtml(trimmedLastname)
+      const account_email = escapeHtml(normalizedEmail)
+      const account_password = passwordRaw.trim()
 
-    if (!account_firstname) {
-    errors.push({ msg: "Please provide a first name." })
-    }
+      if (!account_firstname) {
+        errors.push({ msg: "Please provide a first name." })
+      }
 
-    if (!account_lastname || account_lastname.length < 2) {
-    errors.push({ msg: "Please provide a last name." })
-    }
+      if (!account_lastname || account_lastname.length < 2) {
+        errors.push({ msg: "Please provide a last name." })
+      }
 
-    if (!account_email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account_email)) {
+      if (!account_email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account_email)) {
         errors.push({ msg: "A valid email is required." })
-    }
+    errors.push({ msg: "Please provide a last name." })
+     } else {
+        const emailExists = await accountModel.checkExistingEmail(normalizedEmail)
+        if (typeof emailExists === "string") {
+          errors.push({ msg: "An unexpected error occurred while checking the email." })
+        } else if (emailExists) {
+          errors.push({ msg: "Email exists. Please log in or use different email" })
+        }
+      }
 
-    if (!account_password || !isStrongPassword(account_password)) {
-    errors.push({ msg: "Password does not meet requirements." })
-    }
+      if (!account_password || !isStrongPassword(account_password)) {
+        errors.push({ msg: "Password does not meet requirements." })
+      }
 
-    req.sanitizedRegistration = {
-    account_firstname,
-    account_lastname,
-    account_email,
-    }
-    req.body.account_firstname = trimmedFirstname
-    req.body.account_lastname = trimmedLastname
-    req.body.account_email = normalizedEmail
-    req.validationErrors = errors
+      req.sanitizedRegistration = {
+        account_firstname,
+        account_lastname,
+        account_email,
+      }
+      req.body.account_firstname = trimmedFirstname
+      req.body.account_lastname = trimmedLastname
+      req.body.account_email = normalizedEmail
+      req.validationErrors = errors
 
-    next()
+      next()
     },
+
+    ]
+}
+
+validate.loginRules = () => {
+  return [
+    async (req, _res, next) => {
+      const errors = []
+
+      const emailRaw = typeof req.body.account_email === "string" ? req.body.account_email : ""
+      const passwordRaw = typeof req.body.account_password === "string" ? req.body.account_password : ""
+
+      const normalizedEmail = normalizeEmail(emailRaw)
+      const account_email = escapeHtml(normalizedEmail)
+      const account_password = passwordRaw.trim()
+
+      if (!account_email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account_email)) {
+        errors.push({ msg: "A valid email is required." })
+      }
+
+      if (!account_password) {
+        errors.push({ msg: "Please provide a password." })
+      }
+
+      req.sanitizedLogin = {
+        account_email,
+      }
+
+      req.body.account_email = normalizedEmail
+      req.validationErrors = errors
+
+      next()
+    },
+
     
   ]
 }
@@ -105,5 +148,25 @@ validate.checkRegData = async (req, res, next) => {
 }
   next()
 }
+
+validate.checkLoginData = async (req, res, next) => {
+  const errors = req.validationErrors || []
+
+  if (errors.length) {
+    const nav = await utilities.getNav()
+    const { account_email = "" } = req.sanitizedLogin || {}
+
+    return res.render("account/login", {
+      errors: {
+        array: () => errors,
+      },
+      title: "Login",
+      nav,
+      account_email,
+    })
+  }
+   next()
+}
+
 
 module.exports = validate
