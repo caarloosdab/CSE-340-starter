@@ -5,6 +5,18 @@ const jwt = require("jsonwebtoken")
 require("dotenv").config()
 
 /* ****************************************
+*  Deliver account management view
+* *************************************** */
+async function buildAccountManagement(req, res, next) {
+  const nav = await utilities.getNav()
+  res.render("account/management", {
+    title: "Account Management",
+    nav,
+    errors: null,
+  })
+}
+
+/* ****************************************
 *  Deliver login view
 * *************************************** */
 async function buildLogin(req, res, next) {
@@ -120,4 +132,4 @@ async function accountLogin(req, res) {
   }
 }
 
-module.exports = { buildLogin, buildRegister, registerAccount, accountLogin }
+module.exports = { buildLogin, buildRegister, registerAccount, accountLogin, buildAccountManagement }
