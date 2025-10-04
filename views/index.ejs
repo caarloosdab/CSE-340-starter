@@ -18,21 +18,44 @@
 
 <div class="bottom-grid">
   <section class="upgrades">
-    <h2>Delorean Upgrades</h2>
-    <div class="upgrade-grid">
-      <div class="upgrade">
+    <div class="upgrades__header">
+      <h2>Delorean Upgrades</h2>
+      <div class="carousel-controls" aria-label="Upgrade slideshow controls">
+        <button
+          class="carousel-control carousel-control--prev"
+          type="button"
+          aria-label="View previous upgrade"
+        >
+          &#10094;
+        </button>
+        <button
+          class="carousel-control carousel-control--next"
+          type="button"
+          aria-label="View next upgrade"
+        >
+          &#10095;
+        </button>
+      </div>
+    </div>
+    <div
+      class="upgrade-carousel"
+      role="region"
+      aria-label="Delorean upgrades slideshow"
+      aria-live="polite"
+    >
+      <div class="upgrade-slide is-active">
         <img src="/images/upgrades/flux-cap.png" alt="Flux Capacitor">
         <a href="#">Flux Capacitor</a>
       </div>
-      <div class="upgrade">
+      <div class="upgrade-slide">
         <img src="/images/upgrades/flame.jpg" alt="Flame Decals">
         <a href="#">Flame Decals</a>
       </div>
-      <div class="upgrade">
+      <div class="upgrade-slide">
         <img src="/images/upgrades/bumper_sticker.jpg" alt="Bumper Stickers">
         <a href="#">Bumper Stickers</a>
       </div>
-      <div class="upgrade">
+      <div class="upgrade-slide">
         <img src="/images/upgrades/hub-cap.jpg" alt="Hub Caps">
         <a href="#">Hub Caps</a>
       </div>
@@ -41,12 +64,27 @@
 
   <section class="reviews">
     <h2>DMC Delorean Reviews</h2>
-    <ul>
-      <li>&quot;So fast it's almost like traveling in time.&quot; (4/5)</li>
-      <li>&quot;Coolest ride on the road.&quot; (4/5)</li>
-      <li>&quot;I'm feeling McFly!&quot; (5/5)</li>
-      <li>&quot;The most futuristic ride of our day.&quot; (4/5)</li>
-      <li>&quot;80's livin' and I love it!&quot; (5/5)</li>
-    </ul>
+    <div class="reviews-grid">
+      <article class="review-card">
+        <p class="review-card__quote">&ldquo;So fast it's almost like traveling in time.&rdquo;</p>
+        <p class="review-card__rating">Rated 4 out of 5</p>
+      </article>
+      <article class="review-card">
+        <p class="review-card__quote">&ldquo;Coolest ride on the road.&rdquo;</p>
+        <p class="review-card__rating">Rated 4 out of 5</p>
+      </article>
+      <article class="review-card">
+        <p class="review-card__quote">&ldquo;I'm feeling McFly!&rdquo;</p>
+        <p class="review-card__rating">Rated 5 out of 5</p>
+      </article>
+      <article class="review-card">
+        <p class="review-card__quote">&ldquo;The most futuristic ride of our day.&rdquo;</p>
+        <p class="review-card__rating">Rated 4 out of 5</p>
+      </article>
+      <article class="review-card">
+        <p class="review-card__quote">&ldquo;80's livin' and I love it!&rdquo;</p>
+        <p class="review-card__rating">Rated 5 out of 5</p>
+      </article>
+    </div>
   </section>
 </div>
