@@ -54,13 +54,19 @@ router.get(
 // Route to deliver edit inventory view
 router.get(
   "/edit/:inv_id",
-  utilities.handleErrors(invController.buildEditInventory)
+  utilities.handleErrors(invController.editInventoryView)
 )
 
 // Route to provide inventory data in JSON format
 router.get(
   "/getInventory/:classification_id",
   utilities.handleErrors(invController.getInventoryJSON)
+)
+
+router.post(
+  "/update/", 
+  invController.updateInventory,
+  utilities.handleErrors(invController.buildManagement)
 )
 
 module.exports = router

@@ -848,6 +848,7 @@ body.dark-mode .vehicle-detail .label {
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   font-size: 1rem;
+  color: var(--color-secondary);
   background: var(--color-surface-alt);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
