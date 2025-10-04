@@ -17,8 +17,13 @@
     </ul>
   <% } %>
 
-  <form action="/inv/update" method="post" class="form" novalidate>
-    <input type="hidden" name="inv_id" value="<%= locals.inv_id %>">
+  <form
+    id="updateForm"
+    action="/inv/update"
+    method="post"
+    class="form"
+    novalidate
+  >
     <div class="form-grid">
       <div class="form-group">
         <label for="inv_make">Make</label>
@@ -134,20 +139,23 @@
       </div>
     </div>
 
-    <button class="button-primary" type="submit">Update vehicle</button>
-    <input type="hidden" name="inv_id"
-    <% if(locals.inv_id) { %> value="<%= locals.inv_id %>"
-    <% } %>>
-  </form>
-</section>
+    <button class="button-primary" type="submit" disabled>Update vehicle</button>
+      <input type="hidden" name="inv_id"
+      <% if(locals.inv_id) { %>
+        value="<%= locals.inv_id %>"
+      <% } %>
+      >
+    </form>
+  </section>
 
-<script>
-  // Keep the year input aligned with client-side expectations.
-  (function () {
-    const yearInput = document.getElementById("inv_year")
-    if (!yearInput) return
+ <script>
+   // Keep the year input aligned with client-side expectations.
+   (function () {
+     const yearInput = document.getElementById("inv_year")
+     if (!yearInput) return
 
     const currentYear = new Date().getFullYear()
-    yearInput.max = String(currentYear + 1)
-  })()
-</script>
+      yearInput.max = String(currentYear + 1)
+    })()
+  </script>
+  <script src="/js/inv-update.js" defer></script>

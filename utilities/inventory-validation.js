@@ -208,6 +208,8 @@ validate.inventoryRules = () => {
   ]
 }
 
+validate.newInventoryRules = validate.inventoryRules
+
 validate.checkInventoryData = async (req, res, next) => {
   const errors = req.validationErrors || []
 
@@ -225,6 +227,33 @@ validate.checkInventoryData = async (req, res, next) => {
         array: () => errors,
       },
       ...(req.sanitizedInventory || {}),
+    })
+  }
+
+  next()
+}
+
+validate.checkUpdateData = async (req, res, next) => {
+  const errors = req.validationErrors || []
+
+  if (errors.length) {
+    const nav = await utilities.getNav()
+    const classificationSelect = await utilities.buildClassificationList(
+      req.body.classification_id
+    )
+
+    const sanitized = req.sanitizedInventory || {}
+    const itemName = `${sanitized.inv_make || ""} ${sanitized.inv_model || ""}`.trim()
+
+    return res.render("inventory/edit-inventory", {
+      title: itemName ? `Edit ${itemName}` : "Edit Inventory Item",
+      nav,
+      classificationSelect,
+      errors: {
+        array: () => errors,
+      },
+      inv_id: req.body.inv_id,
+      ...sanitized,
     })
   }
 
