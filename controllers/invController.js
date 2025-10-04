@@ -8,11 +8,11 @@ const invCont = {}
  * ************************** */
 invCont.buildManagement = async function (_req, res, next) {
   let nav = await utilities.getNav()
-  const classificationSelect = await utilities.buildClassificationList()
+  const classificationList = await utilities.buildClassificationList()
   res.render("./inventory/management", {
     title: "Inventory Management",
     nav,
-    classificationSelect,
+    classificationList,
   })
 }
 
@@ -47,9 +47,11 @@ invCont.createClassification = async function (req, res) {
     )
 
     const nav = await utilities.getNav()
+    const classificationList = await utilities.buildClassificationList()
     return res.status(201).render("./inventory/management", {
       title: "Inventory Management",
       nav,
+      classificationList
     })
   } catch (error) {
     console.error("createClassification controller error", error)
@@ -117,9 +119,11 @@ invCont.createInventory = async function (req, res) {
     )
 
     const nav = await utilities.getNav()
+    const classificationList = await utilities.buildClassificationList()
     return res.status(201).render("./inventory/management", {
       title: "Inventory Management",
       nav,
+      classificationList,
     })
   } catch (error) {
     console.error("createInventory controller error", error)

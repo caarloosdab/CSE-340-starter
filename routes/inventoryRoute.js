@@ -42,7 +42,7 @@ router.post(
 // Route to build inventory by classification view
 router.get(
     "/type/:classificationId", 
-    utilities.handleErrors(invController.buildByClassificationId)
+  utilities.handleErrors(invController.buildByClassificationId)
 )
 
 // Route to build inventory by inventoryId view
@@ -53,7 +53,8 @@ router.get(
 
 // Route to provide inventory data in JSON format
 router.get(
-  "/getInventory/:classification_id", 
-  utilities.handleErrors(invController.getInventoryJSON))
+  "/getInventory/:classification_id",
+  utilities.handleErrors(invController.getInventoryJSON)
+)
 
 module.exports = router

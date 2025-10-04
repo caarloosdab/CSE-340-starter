@@ -30,12 +30,17 @@
 
   <h2>Manage Inventory</h2>
   <p>
-    Select a classification from the list to see the items belonging to 
-    the classification.
+    Select a classification from the list to see the items belonging to the 
+    classification.
   </p>
-  <% classificationList %>
-  <table id="inventoryDisplay"></table>
+   <div class="management__select">
+    <%- classificationList %>
+  </div>
+  <table
+    id="inventoryDisplay"
+    class="inventory-table"
+    aria-live="polite"
+  ></table>
   <noscript>JavaScript must be enabled to use this page.</noscript>
-
 </section>
 <script src="../../js/inventory.js"></script>
