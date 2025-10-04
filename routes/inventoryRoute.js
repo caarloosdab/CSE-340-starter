@@ -47,8 +47,14 @@ router.get(
 
 // Route to build inventory by inventoryId view
 router.get(
-    "/detail/:inventoryId", 
+    "/detail/:inventoryId",
     utilities.handleErrors(invController.buildByInventoryId)
+)
+
+// Route to deliver edit inventory view
+router.get(
+  "/edit/:inv_id",
+  utilities.handleErrors(invController.buildEditInventory)
 )
 
 // Route to provide inventory data in JSON format
