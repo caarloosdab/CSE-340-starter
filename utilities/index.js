@@ -170,4 +170,16 @@ Util.checkJWTToken = (req, res, next) => {
 Util.handleErrors = (fn) => (req, res, next) => 
   Promise.resolve(fn(req, res, next)).catch(next)
 
+/* ****************************************
+ *  Check Login
+ * ************************************ */
+ Util.checkLogin = (req, res, next) => {
+  if (res.locals.loggedin) {
+    next()
+  } else {
+    req.flash("notice", "Please log in.")
+    return res.redirect("/account/login")
+  }
+ }
+
 module.exports = Util
