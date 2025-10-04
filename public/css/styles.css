@@ -25,7 +25,7 @@ body {
   font-family: "Segoe UI", "Inter", -apple-system, BlinkMacSystemFont,
     "Helvetica Neue", Arial, sans-serif;
   color: var(--color-text);
-  background: url("/images/site/checkerboard.jpg") center/cover fixed no-repeat;
+  background: url("/images/site/small_check.jpg") center/cover fixed no-repeat;
   position: relative;
   min-height: 100vh;
   transition: color 0.3s ease, background-color 0.3s ease;
@@ -615,10 +615,11 @@ body.dark-mode footer a {
 }
 
 .inv-card {
-  background: #fff;
-  border: 1px solid #cfd4da;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -626,7 +627,7 @@ body.dark-mode footer a {
 .inv-card:hover,
 .inv-card:focus-within {
   transform: translateY(-4px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+   box-shadow: 0 18px 32px rgba(15, 23, 42, 0.18);
 }
 
 .inv-card__link {
@@ -637,12 +638,12 @@ body.dark-mode footer a {
 
 .inv-card__figure {
   margin: 0;
-  background: #f8f9fa;
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.12), rgba(148, 163, 184, 0.04));
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 1.25rem;
 }
 
 .inv-card__figure img {
@@ -652,21 +653,39 @@ body.dark-mode footer a {
 }
 
 .inv-card__figure figcaption {
-  margin-top: 0.75rem;
+  margin-top: 0.85rem;
   font-weight: 600;
   text-align: center;
+  color: var(--color-secondary);
 }
 
 .inv-card__details {
-  padding: 1rem;
-  background: #fff;
+  padding: 1.1rem 1.25rem 1.35rem;
 }
 
 .inv-card__price {
   margin: 0;
   font-size: 1.125rem;
-  font-weight: bold;
-  color: #006d91;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+body.dark-mode .inv-card {
+  background: rgba(15, 23, 42, 0.92);
+  border-color: rgba(148, 163, 184, 0.45);
+  box-shadow: 0 26px 44px rgba(2, 6, 23, 0.55);
+}
+
+body.dark-mode .inv-card__figure {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.12), rgba(14, 165, 233, 0.04));
+}
+
+body.dark-mode .inv-card__figure figcaption {
+  color: rgba(226, 232, 240, 0.96);
+}
+
+body.dark-mode .inv-card__price {
+  color: var(--color-primary);
 }
 
 /* Vehicle detail view */
@@ -693,10 +712,12 @@ body.dark-mode footer a {
 }
 
 .vehicle-detail__content {
-  background: #fff;
+  background: var(--color-surface-alt);
+  color: var(--color-text);
   padding: 1.5rem;
   border-radius: 12px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--color-border);
 }
 
 .vehicle-detail__content h2 {
@@ -707,7 +728,7 @@ body.dark-mode footer a {
 .vehicle-detail__price {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #006d91;
+  color: var(--color-primary);
 }
 
 .vehicle-detail__description {
@@ -717,7 +738,25 @@ body.dark-mode footer a {
 
 .vehicle-detail .label {
   font-weight: 600;
-  color: #333;
+  color: var(--color-secondary);
+}
+
+body.dark-mode .vehicle-detail__media img {
+  box-shadow: 0 16px 32px rgba(2, 6, 23, 0.6);
+}
+
+body.dark-mode .vehicle-detail__content {
+  box-shadow: 0 20px 40px rgba(2, 6, 23, 0.7);
+  background: rgba(15, 23, 42, 0.92);
+  border-color: rgba(148, 163, 184, 0.45);
+}
+
+body.dark-mode .vehicle-detail__description {
+  color: var(--color-text);
+}
+
+body.dark-mode .vehicle-detail .label {
+  color: rgba(226, 232, 240, 0.92);
 }
 
 .visually-hidden {

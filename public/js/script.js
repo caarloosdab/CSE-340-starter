@@ -12,6 +12,20 @@ function initThemeToggle() {
   const body = document.body;
   const icon = toggleButton.querySelector('.theme-toggle__icon');
   const label = toggleButton.querySelector('.theme-toggle__label');
+  const heroImage = document.querySelector('[data-hero-image]');
+  const heroImageConfig = heroImage
+    ? {
+        lightSrc:
+          heroImage.getAttribute('data-light-src') || heroImage.getAttribute('src'),
+        darkSrc:
+          heroImage.getAttribute('data-dark-src') ||
+          heroImage.getAttribute('data-light-src') ||
+          heroImage.getAttribute('src'),
+        lightAlt: heroImage.getAttribute('data-light-alt') || heroImage.getAttribute('alt'),
+        darkAlt:
+          heroImage.getAttribute('data-dark-alt') || heroImage.getAttribute('alt'),
+      }
+    : null;
 
   const storedPreference = localStorage.getItem(THEME_STORAGE_KEY);
   const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -35,6 +49,7 @@ function initThemeToggle() {
 
   function applyTheme(useDark, { persist } = { persist: true }) {
     body.classList.toggle('dark-mode', useDark);
+    updateHeroImage(useDark);
     toggleButton.setAttribute('aria-pressed', String(useDark));
     if (icon) {
       icon.textContent = useDark ? '☀️' : '🌙';
@@ -47,6 +62,20 @@ function initThemeToggle() {
       localStorage.setItem(THEME_STORAGE_KEY, useDark ? 'dark' : 'light');
     } else {
       localStorage.removeItem(THEME_STORAGE_KEY);
+    }
+  }
+
+   function updateHeroImage(useDark) {
+    if (!heroImage || !heroImageConfig) return;
+
+    const targetSrc = useDark ? heroImageConfig.darkSrc : heroImageConfig.lightSrc;
+    if (targetSrc && heroImage.getAttribute('src') !== targetSrc) {
+      heroImage.setAttribute('src', targetSrc);
+    }
+
+    const targetAlt = useDark ? heroImageConfig.darkAlt : heroImageConfig.lightAlt;
+    if (targetAlt && heroImage.getAttribute('alt') !== targetAlt) {
+      heroImage.setAttribute('alt', targetAlt);
     }
   }
 }
