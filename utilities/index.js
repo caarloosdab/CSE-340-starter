@@ -182,4 +182,22 @@ Util.handleErrors = (fn) => (req, res, next) =>
   }
  }
 
+/* ****************************************
+ *  Check for employee or admin access
+ * ************************************ */
+Util.checkEmployeeOrAdmin = async (req, res, next) => {
+  const accountType = res.locals.accountData?.account_type
+  if (res.locals.loggedin && ["Employee", "Admin"].includes(accountType)) {
+    return next()
+  }
+
+  req.flash("notice", "You do not have permission to access that page.")
+  const nav = await Util.getNav()
+  return res.status(403).render("account/login", {
+    title: "Login",
+    nav,
+    errors: null,
+  })
+}
+
 module.exports = Util

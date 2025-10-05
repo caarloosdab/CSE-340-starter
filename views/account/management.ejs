@@ -16,5 +16,17 @@
     </ul>
   <% } %>
 
-  <p>You're logged in.</p>
+  <% if (account) { %>
+    <h2>Welcome <%= account.account_firstname %></h2>
+    <p class="account-card__link">
+      <a href="/account/update/<%= account.account_id %>">Update account information</a>
+    </p>
+
+    <% if (["Employee", "Admin"].includes(account.account_type)) { %>
+      <h3>Inventory Management</h3>
+      <p>
+        <a href="/inv/">Manage Inventory</a>
+      </p>
+    <% } %>
+  <% } %>
 </section>

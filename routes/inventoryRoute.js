@@ -8,18 +8,21 @@ const invValidation = require("../utilities/inventory-validation")
 // Management view
 router.get(
   "/",
+  utilities.checkEmployeeOrAdmin,
   utilities.handleErrors(invController.buildManagement)
 )
 
 // Route to deliver add classification view
 router.get(
   "/add-classification",
+  utilities.checkEmployeeOrAdmin,
   utilities.handleErrors(invController.buildAddClassification)
 )
 
 // Route to process add classification form
 router.post(
   "/add-classification",
+  utilities.checkEmployeeOrAdmin,
   invValidation.classificationRules(),
   invValidation.checkClassificationData,
   utilities.handleErrors(invController.createClassification)
@@ -28,6 +31,7 @@ router.post(
 // Route to deliver add inventory view
 router.get(
   "/add-inventory",
+  utilities.checkEmployeeOrAdmin,
   utilities.handleErrors(invController.buildAddInventory)
 )
 
@@ -35,6 +39,7 @@ router.get(
 router.post(
   "/add-inventory",
   invValidation.inventoryRules(),
+  utilities.checkEmployeeOrAdmin,
   invValidation.checkInventoryData,
   utilities.handleErrors(invController.createInventory)
 )
@@ -54,23 +59,27 @@ router.get(
 // Route to deliver edit inventory view
 router.get(
   "/edit/:inv_id",
+  utilities.checkEmployeeOrAdmin,
   utilities.handleErrors(invController.editInventoryView)
 )
 
 // Route to deliver delete inventory confirmation view
 router.get(
   "/delete/:inv_id",
+  utilities.checkEmployeeOrAdmin,
   utilities.handleErrors(invController.buildDeleteInventory)
 )
 
 // Route to provide inventory data in JSON format
 router.get(
   "/getInventory/:classification_id",
+  utilities.checkEmployeeOrAdmin,
   utilities.handleErrors(invController.getInventoryJSON)
 )
 
 router.post(
   "/update",
+  utilities.checkEmployeeOrAdmin,
   invValidation.newInventoryRules(),
   invValidation.checkUpdateData,
   utilities.handleErrors(invController.updateInventory)
@@ -78,6 +87,7 @@ router.post(
 
 router.post(
   "/delete",
+  utilities.checkEmployeeOrAdmin,
   utilities.handleErrors(invController.deleteInventoryItem)
 )
 

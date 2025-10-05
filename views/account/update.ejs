@@ -1,0 +1,91 @@
+<section class="account-card" aria-labelledby="account-update-title">
+  <h1 id="account-update-title"><%= title %></h1>
+
+  <% const flashMessages = messages(); %>
+  <% if (flashMessages.trim()) { %>
+    <div class="account-card__messages">
+      <%- flashMessages %>
+    </div>
+  <% } %>
+
+  <% if (errors) { %>
+    <ul class="notice">
+      <% errors.array().forEach(error => { %>
+        <li><%= error.msg %></li>
+      <% }) %>
+    </ul>
+  <% } %>
+
+  <form class="account-form" action="/account/update" method="post">
+    <fieldset>
+      <legend>Account Update</legend>
+
+      <div class="form-field">
+        <label for="account_firstname">First Name</label>
+        <input
+          type="text"
+          id="account_firstname"
+          name="account_firstname"
+          required
+          value="<%= typeof account_firstname !== 'undefined' ? account_firstname : '' %>"
+          autocomplete="given-name"
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="account_lastname">Last Name</label>
+        <input
+          type="text"
+          id="account_lastname"
+          name="account_lastname"
+          required
+          value="<%= typeof account_lastname !== 'undefined' ? account_lastname : '' %>"
+          autocomplete="family-name"
+        >
+      </div>
+
+      <div class="form-field">
+        <label for="account_email">Email Address</label>
+        <input
+          type="email"
+          id="account_email"
+          name="account_email"
+          required
+          value="<%= typeof account_email !== 'undefined' ? account_email : '' %>"
+          autocomplete="email"
+        >
+      </div>
+    </fieldset>
+
+    <input type="hidden" name="account_id" value="<%= account_id %>">
+
+    <button type="submit" class="button">Update Account</button>
+  </form>
+
+  <form class="account-form account-form--password" action="/account/update/password" method="post">
+    <fieldset>
+      <legend>Change Password</legend>
+      <p id="password-requirements" class="form-help">
+        Enter a new password to replace your current password. Passwords must be at least 12 characters and include a lowercase letter, an uppercase letter, a number, and a special character.
+      </p>
+
+      <div class="form-field">
+        <label for="account_password">New Password</label>
+        <input
+          type="password"
+          id="account_password"
+          name="account_password"
+          required
+          minlength="12"
+          pattern="^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\\s).{12,}$"
+          aria-describedby="password-requirements"
+          autocomplete="new-password"
+        >
+      </div>
+    </fieldset>
+
+    <input type="hidden" name="account_id" value="<%= account_id %>">
+
+    <button type="submit" class="button">Change Password</button>
+  </form>
+</section>

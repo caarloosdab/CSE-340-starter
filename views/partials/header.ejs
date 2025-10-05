@@ -12,6 +12,17 @@
       <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
       <span class="theme-toggle__label">Dark mode</span>
     </button>
-    <a title="Click to log in" href="/account/login">My Account</a>
+    <% if (locals.loggedin) { %>
+      <a
+        title="Go to your account management tools"
+        href="/account/"
+        class="account-link"
+      >
+        Welcome <%= locals.accountData?.account_firstname %>
+      </a>
+      <a title="Log out of your account" href="/account/logout">Logout</a>
+    <% } else { %>
+      <a title="Click to log in" href="/account/login">My Account</a>
+    <% } %>
   </div>
 </header>

@@ -120,6 +120,74 @@ validate.loginRules = () => {
       next()
     },
 
+
+    ]
+}
+
+validate.updateAccountRules = () => {
+  return [
+    async (req, _res, next) => {
+      const errors = []
+
+      const firstnameRaw = typeof req.body.account_firstname === "string" ? req.body.account_firstname : ""
+      const lastnameRaw = typeof req.body.account_lastname === "string" ? req.body.account_lastname : ""
+      const emailRaw = typeof req.body.account_email === "string" ? req.body.account_email : ""
+      const accountIdRaw = typeof req.body.account_id === "string" || typeof req.body.account_id === "number" ? req.body.account_id : ""
+
+      const trimmedFirstname = firstnameRaw.trim()
+      const trimmedLastname = lastnameRaw.trim()
+      const normalizedEmail = normalizeEmail(emailRaw)
+      const account_firstname = escapeHtml(trimmedFirstname)
+      const account_lastname = escapeHtml(trimmedLastname)
+      const account_email = escapeHtml(normalizedEmail)
+      const account_id = Number.parseInt(accountIdRaw, 10)
+
+      if (!account_firstname) {
+        errors.push({ msg: "Please provide a first name." })
+      }
+
+      if (!account_lastname || account_lastname.length < 2) {
+        errors.push({ msg: "Please provide a last name." })
+      }
+
+      if (!Number.isInteger(account_id)) {
+        errors.push({ msg: "Account identifier is missing or invalid." })
+      }
+
+      if (!account_email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(account_email)) {
+        errors.push({ msg: "A valid email is required." })
+      } else if (Number.isInteger(account_id)) {
+        const currentAccount = await accountModel.getAccountById(account_id)
+        if (!currentAccount) {
+          errors.push({ msg: "Unable to locate the specified account." })
+        } else {
+          const currentEmail = (currentAccount.account_email || "").toLowerCase()
+          if (currentEmail !== normalizedEmail) {
+            const emailExists = await accountModel.checkExistingEmail(normalizedEmail)
+            if (typeof emailExists === "string") {
+              errors.push({ msg: "An unexpected error occurred while checking the email." })
+            } else if (emailExists) {
+              errors.push({ msg: "Email exists. Please log in or use different email" })
+            }
+          }
+        }
+      }
+
+      req.sanitizedUpdate = {
+        account_firstname,
+        account_lastname,
+        account_email,
+        account_id,
+      }
+
+      req.body.account_firstname = trimmedFirstname
+      req.body.account_lastname = trimmedLastname
+      req.body.account_email = normalizedEmail
+      req.body.account_id = account_id
+      req.validationErrors = errors
+
+      next()
+    },
     
   ]
 }
@@ -166,6 +234,97 @@ validate.checkLoginData = async (req, res, next) => {
     })
   }
    next()
+}
+
+validate.checkUpdateData = async (req, res, next) => {
+  const errors = req.validationErrors || []
+
+  if (errors.length) {
+    const nav = await utilities.getNav()
+    const {
+      account_firstname = "",
+      account_lastname = "",
+      account_email = "",
+      account_id = "",
+    } = req.sanitizedUpdate || {}
+
+    return res.render("account/update", {
+      errors: {
+        array: () => errors,
+      },
+      title: "Update Account",
+      nav,
+      account_firstname,
+      account_lastname,
+      account_email,
+      account_id,
+    })
+  }
+
+  next()
+}
+
+validate.passwordUpdateRules = () => {
+  return [
+    async (req, _res, next) => {
+      const errors = []
+
+      const passwordRaw = typeof req.body.account_password === "string" ? req.body.account_password : ""
+      const accountIdRaw = typeof req.body.account_id === "string" || typeof req.body.account_id === "number" ? req.body.account_id : ""
+
+      const trimmedPassword = passwordRaw.trim()
+      const account_id = Number.parseInt(accountIdRaw, 10)
+
+      if (!Number.isInteger(account_id)) {
+        errors.push({ msg: "Account identifier is missing or invalid." })
+      }
+
+      if (!trimmedPassword || !isStrongPassword(trimmedPassword)) {
+        errors.push({ msg: "Password does not meet requirements." })
+      }
+
+      req.body.account_id = account_id
+      req.body.account_password = trimmedPassword
+      req.validationErrors = errors
+
+      next()
+    },
+  ]
+}
+
+validate.checkPasswordData = async (req, res, next) => {
+  const errors = req.validationErrors || []
+
+  if (errors.length) {
+    const nav = await utilities.getNav()
+    const accountId = req.body.account_id
+    let account_firstname = ""
+    let account_lastname = ""
+    let account_email = ""
+
+    if (Number.isInteger(accountId)) {
+      const account = await accountModel.getAccountById(accountId)
+      if (account) {
+        account_firstname = escapeHtml((account.account_firstname || "").trim())
+        account_lastname = escapeHtml((account.account_lastname || "").trim())
+        account_email = escapeHtml(normalizeEmail(account.account_email || ""))
+      }
+    }
+
+    return res.render("account/update", {
+      errors: {
+        array: () => errors,
+      },
+      title: "Update Account",
+      nav,
+      account_firstname,
+      account_lastname,
+      account_email,
+      account_id: accountId,
+    })
+  }
+
+  next()
 }
 
 
