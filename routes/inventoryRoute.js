@@ -57,6 +57,12 @@ router.get(
   utilities.handleErrors(invController.editInventoryView)
 )
 
+// Route to deliver delete inventory confirmation view
+router.get(
+  "/delete/:inv_id",
+  utilities.handleErrors(invController.buildDeleteInventory)
+)
+
 // Route to provide inventory data in JSON format
 router.get(
   "/getInventory/:classification_id",
@@ -68,6 +74,11 @@ router.post(
   invValidation.newInventoryRules(),
   invValidation.checkUpdateData,
   utilities.handleErrors(invController.updateInventory)
+)
+
+router.post(
+  "/delete",
+  utilities.handleErrors(invController.deleteInventoryItem)
 )
 
 module.exports = router
