@@ -1,5 +1,10 @@
-<section class="account-card" aria-labelledby="account-update-title">
-  <h1 id="account-update-title"><%= title %></h1>
+<section class="account-card account-card--form" aria-labelledby="account-update-title">
+  <header class="account-card__header">
+    <h1 id="account-update-title"><%= title %></h1>
+    <p class="account-card__subtitle">
+      Update your contact details and refresh your password to keep your account secure.
+    </p>
+  </header>
 
   <% const flashMessages = messages(); %>
   <% if (flashMessages.trim()) { %>
@@ -16,12 +21,13 @@
     </ul>
   <% } %>
 
-  <form class="account-form" action="/account/update" method="post">
-    <fieldset>
-      <legend>Account Update</legend>
+  <div class="account-layout account-layout--split">
+    <form class="account-form account-form--profile" action="/account/update" method="post">
+      <fieldset>
+        <legend>Account details</legend>
 
       <div class="form-field">
-        <label for="account_firstname">First Name</label>
+        <label for="account_lastname">Last name</label>
         <input
           type="text"
           id="account_firstname"
@@ -45,7 +51,7 @@
       </div>
 
       <div class="form-field">
-        <label for="account_email">Email Address</label>
+        <label for="account_email">Email address</label>
         <input
           type="email"
           id="account_email"
@@ -59,33 +65,46 @@
 
     <input type="hidden" name="account_id" value="<%= account_id %>">
 
-    <button type="submit" class="button">Update Account</button>
+    <button type="submit" class="button-primary">Save changes</button>
   </form>
 
-  <form class="account-form account-form--password" action="/account/update/password" method="post">
-    <fieldset>
-      <legend>Change Password</legend>
-      <p id="password-requirements" class="form-help">
-        Enter a new password to replace your current password. Passwords must be at least 12 characters and include a lowercase letter, an uppercase letter, a number, and a special character.
-      </p>
+  <div class="account-layout__column">
+      <form class="account-form account-form--password" action="/account/update/password" method="post">
+        <fieldset>
+          <legend>Change password</legend>
+          <p id="password-requirements" class="form-help">
+            Passwords must be at least 12 characters and include a lowercase letter, an uppercase
+            letter, a number, and a special character.
+          </p>
 
       <div class="form-field">
-        <label for="account_password">New Password</label>
-        <input
-          type="password"
-          id="account_password"
-          name="account_password"
-          required
-          minlength="12"
-          pattern="^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\\s).{12,}$"
-          aria-describedby="password-requirements"
-          autocomplete="new-password"
-        >
-      </div>
-    </fieldset>
+            <label for="account_password">New password</label>
+            <input
+              type="password"
+              id="account_password"
+              name="account_password"
+              required
+              minlength="12"
+              pattern="^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\\s).{12,}$"
+              aria-describedby="password-requirements"
+              autocomplete="new-password"
+            >
+          </div>
+        </fieldset>
 
-    <input type="hidden" name="account_id" value="<%= account_id %>">
+        <input type="hidden" name="account_id" value="<%= account_id %>">
 
-    <button type="submit" class="button">Change Password</button>
-  </form>
+    <button type="submit" class="button-primary">Update password</button>
+      </form>
+
+      <aside class="account-tip" aria-label="Security tips">
+        <h3>Security tips</h3>
+        <ul>
+          <li>Use a unique password that you do not share with other accounts.</li>
+          <li>Consider a passphrase that combines memorable words with numbers.</li>
+          <li>Enable multi-factor authentication wherever it is available.</li>
+        </ul>
+      </aside>
+    </div>
+  </div>
 </section>

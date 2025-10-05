@@ -1,5 +1,10 @@
-<section class="account-card" aria-labelledby="account-management-title">
-  <h1 id="account-management-title"><%= title %></h1>
+<section class="account-card account-card--dashboard" aria-labelledby="account-management-title">
+  <header class="account-card__header">
+    <h1 id="account-management-title"><%= title %></h1>
+    <p class="account-card__subtitle">
+      Review your profile, access helpful shortcuts, and keep your information up to date.
+    </p>
+  </header>
 
   <% const flashMessages = messages(); %>
   <% if (flashMessages.trim()) { %>
@@ -17,16 +22,48 @@
   <% } %>
 
   <% if (account) { %>
-    <h2>Welcome <%= account.account_firstname %></h2>
-    <p class="account-card__link">
-      <a href="/account/update/<%= account.account_id %>">Update account information</a>
-    </p>
+    <% const initials = `${account.account_firstname?.[0] ?? ''}${account.account_lastname?.[0] ?? ''}`.trim().toUpperCase(); %>
+    <div class="account-overview" role="group" aria-label="Account summary">
+      <div class="account-overview__identity">
+        <span class="account-avatar" aria-hidden="true"><%= initials || '🧑' %></span>
+        <div class="account-overview__details">
+          <h2>Welcome, <%= account.account_firstname %>!</h2>
+          <p class="account-overview__email"><%= account.account_email %></p>
+          <p class="account-tag">Account type: <strong><%= account.account_type %></strong></p>
+        </div>
+      </div>
+
+      <div class="account-actions">
+        <a class="button-primary" href="/account/update/<%= account.account_id %>">Update account information</a>
+        <a class="button-secondary" href="mailto:support@example.com">Contact support</a>
+      </div>
+    </div>
+
+    <div class="account-grid">
+      <article class="account-panel">
+        <h3 class="account-panel__title">Profile Checklist</h3>
+        <ul class="account-panel__list">
+          <li><span class="account-pill">✔</span> Keep your email address current</li>
+          <li><span class="account-pill">✔</span> Refresh your password regularly</li>
+          <li><span class="account-pill">✔</span> Review your account type permissions</li>
+        </ul>
+      </article>
 
     <% if (["Employee", "Admin"].includes(account.account_type)) { %>
-      <h3>Inventory Management</h3>
-      <p>
-        <a href="/inv/">Manage Inventory</a>
-      </p>
-    <% } %>
+        <article class="account-panel account-panel--highlight">
+          <h3 class="account-panel__title">Inventory Management</h3>
+          <p>Access enhanced inventory tools tailored for <%= account.account_type.toLowerCase() %>s.</p>
+          <a class="button-primary" href="/inv/">Manage inventory</a>
+        </article>
+      <% } else { %>
+        <article class="account-panel">
+          <h3 class="account-panel__title">Looking to do more?</h3>
+          <p>
+            Reach out to our team if you need elevated access for inventory or administrative
+            tools.
+          </p>
+        </article>
+      <% } %>
+    </div>
   <% } %>
 </section>
