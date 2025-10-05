@@ -140,13 +140,13 @@
     </div>
 
     <button class="button-primary" type="submit" disabled>Update vehicle</button>
-      <input type="hidden" name="inv_id"
-      <% if(locals.inv_id) { %>
-        value="<%= locals.inv_id %>"
-      <% } %>
-      >
-    </form>
-  </section>
+      <input
+      type="hidden"
+      name="inv_id"
+      <% if(locals.inv_id) { %>value="<%= locals.inv_id %>"<% } %>
+    >
+  </form>
+</section>
 
  <script>
    // Keep the year input aligned with client-side expectations.
