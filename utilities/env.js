@@ -3,7 +3,8 @@ const normalizeQuotes = (value) => {
   const trimmed = value.trim()
   if (!trimmed) return undefined
   const unquoted = trimmed.replace(/^['"`]+|['"`]+$/g, "")
-  return unquoted.trim() || undefined
+  const noNewlines = unquoted.replace(/[\r\n]+/g, "")
+  return noNewlines.trim() || undefined
 }
 
 const cleanEnvString = (value) => normalizeQuotes(value)
