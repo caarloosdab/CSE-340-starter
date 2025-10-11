@@ -36,16 +36,24 @@ if (!poolConfig.connectionString) {
 
 const pool = new Pool(poolConfig)
 module.exports = {
-  async query(text, params) {
+  async query(configOrText, params) {
+    const isConfigObject =
+      configOrText && typeof configOrText === "object" && "text" in configOrText
+
+    const queryText = isConfigObject ? configOrText.text : configOrText
+
     try {
-      const res = await pool.query(text, params)
-      //console.log("executed query", { text })
-       if (isDevelopment) {
-        console.log("executed query", { text })
+      const res = isConfigObject
+        ? await pool.query(configOrText)
+        : await pool.query(configOrText, params)
+
+      if (isDevelopment) {
+        console.log("executed query", { text: queryText })
       }
+
       return res
     } catch (error) {
-      console.error("error in query", { text })
+      console.error("error in query", { text: queryText })
       throw error
     }
   },

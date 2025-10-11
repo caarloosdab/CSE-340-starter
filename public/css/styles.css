@@ -758,12 +758,219 @@ body.dark-mode .vehicle-detail__content {
 }
 
 body.dark-mode .vehicle-detail__description {
-  color: var(--color-text);
+  color: rgba(226, 232, 240, 0.88);
 }
 
 body.dark-mode .vehicle-detail .label {
   color: rgba(226, 232, 240, 0.92);
 }
+
+.reviews {
+  margin-top: 3rem;
+  position: relative;
+  padding: 2.5rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(160deg, rgba(0, 170, 187, 0.08), rgba(15, 23, 42, 0.02));
+  border: 1px solid rgba(0, 109, 145, 0.18);
+  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.12);
+  overflow: hidden;
+}
+
+.reviews::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.18), transparent 55%);
+  pointer-events: none;
+}
+
+.reviews > * {
+  position: relative;
+  z-index: 1;
+}
+
+.reviews h2 {
+  margin: 0;
+  font-size: clamp(1.8rem, 2.5vw, 2.1rem);
+  color: var(--color-secondary);
+}
+
+.reviews__summary {
+  margin: 1.25rem 0 2rem;
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  background: rgba(0, 170, 187, 0.1);
+  border: 1px solid rgba(0, 170, 187, 0.2);
+  font-size: 1rem;
+  color: var(--color-secondary);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.reviews__summary strong {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.reviews__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.reviews__item {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.reviews__item:hover,
+.reviews__item:focus-within {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 42px rgba(15, 23, 42, 0.14);
+}
+
+.reviews__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.reviews__reviewer {
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+.reviews__meta time {
+  font-variant-numeric: tabular-nums;
+}
+
+.reviews__rating {
+  font-size: 1.35rem;
+  letter-spacing: 0.15em;
+  color: #f59e0b;
+  text-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+}
+
+.reviews__comment {
+  margin: 0;
+  line-height: 1.65;
+  color: var(--color-secondary);
+}
+
+.reviews__empty {
+  margin: 0 0 2rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-md);
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--color-muted);
+}
+
+.reviews__form {
+  margin-top: 2.5rem;
+  padding: 2rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.12);
+}
+
+.reviews__form h3 {
+  margin: 0 0 1.5rem;
+  font-size: 1.4rem;
+  color: var(--color-secondary);
+}
+
+.reviews__form .form {
+  display: grid;
+  gap: 1.4rem;
+}
+
+.reviews__form .form-group textarea {
+  min-height: 8rem;
+}
+
+.reviews__form .button-primary {
+  width: fit-content;
+  padding-inline: 2.25rem;
+}
+
+.reviews__signin {
+  margin-top: 2rem;
+  font-weight: 500;
+  color: var(--color-secondary);
+}
+
+.reviews__signin a {
+  color: var(--color-primary);
+}
+
+.reviews__signin a:hover,
+.reviews__signin a:focus-visible {
+  text-decoration: underline;
+}
+
+body.dark-mode .reviews {
+  background: linear-gradient(160deg, rgba(34, 211, 238, 0.12), rgba(15, 23, 42, 0.7));
+  border-color: rgba(56, 189, 248, 0.28);
+  box-shadow: 0 32px 60px rgba(2, 6, 23, 0.65);
+}
+
+body.dark-mode .reviews::before {
+  background: radial-gradient(circle at top right, rgba(34, 211, 238, 0.25), transparent 55%);
+}
+
+body.dark-mode .reviews__summary {
+  background: rgba(14, 165, 233, 0.18);
+  border-color: rgba(14, 165, 233, 0.35);
+  color: rgba(226, 232, 240, 0.9);
+}
+
+body.dark-mode .reviews__item {
+  background: rgba(15, 23, 42, 0.8);
+  border-color: rgba(148, 163, 184, 0.35);
+  box-shadow: 0 28px 56px rgba(2, 6, 23, 0.65);
+}
+
+body.dark-mode .reviews__meta {
+  color: rgba(203, 213, 225, 0.85);
+}
+
+body.dark-mode .reviews__reviewer,
+body.dark-mode .reviews__comment,
+body.dark-mode .reviews__form h3 {
+  color: rgba(226, 232, 240, 0.92);
+}
+
+body.dark-mode .reviews__form {
+  background: rgba(15, 23, 42, 0.9);
+  border-color: rgba(148, 163, 184, 0.35);
+  box-shadow: 0 32px 64px rgba(2, 6, 23, 0.7);
+}
+
+body.dark-mode .reviews__empty {
+  background: rgba(148, 163, 184, 0.25);
+  color: rgba(226, 232, 240, 0.75);
+}
+
+body.dark-mode .reviews__signin {
+  color: rgba(226, 232, 240, 0.88);
+}
+
+body.dark-mode .reviews__signin a {
+  color: var(--color-primary);
+}
+
 
 .visually-hidden {
   position: absolute;
@@ -849,7 +1056,9 @@ body.dark-mode .vehicle-detail .label {
   color: var(--color-secondary);
 }
 
-.form-group input {
+.form-group input,
+.form-group select,
+.form-group textarea{
   padding: 0.85rem 1.1rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
@@ -860,19 +1069,46 @@ body.dark-mode .vehicle-detail .label {
 }
 
 .form-group input:required:invalid,
-.form-group input:focus:invalid {
+.form-group input:focus:invalid,
+.form-group select:required:invalid,
+.form-group select:focus:invalid,
+.form-group textarea:required:invalid,
+.form-group textarea:focus:invalid {
   border-color: #dc2626;
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18);
 }
 
-.form-group input:required:valid {
+.form-group input:required:valid,
+.form-group select:required:valid,
+.form-group textarea:required:valid {
   border-color: #16a34a;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 4px rgba(0, 109, 145, 0.2);
+}
+
+.form-group select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-primary) 50%),
+    linear-gradient(135deg, var(--color-primary) 50%, transparent 50%),
+    linear-gradient(to right, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0));
+  background-position: calc(100% - 1.4rem) calc(1rem + 2px),
+    calc(100% - 1rem) calc(1rem + 2px),
+    calc(100% - 2.4rem) 50%;
+  background-size: 0.5rem 0.5rem, 0.5rem 0.5rem, 1px 60%;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 7.5rem;
+  line-height: 1.5;
 }
 
 .button-primary,

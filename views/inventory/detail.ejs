@@ -1,4 +1,101 @@
 <section class="detail-view">
   <h1><%= title %></h1>
+
+  <% const flashMessages = messages(); %>
+  <% if (flashMessages.trim()) { %>
+    <div class="notice" role="status" aria-live="polite">
+      <%- flashMessages %>
+    </div>
+  <% } %>
+
   <%- detail %>
+ <section id="reviews" class="reviews">
+    <h2>Customer reviews</h2>
+
+    <% if (typeof reviewAverageValue === "number" && reviewCount > 0) { %>
+      <p class="reviews__summary" aria-live="polite">
+        Average rating: <strong><%= reviewAverage %></strong> / 5
+        (<%= reviewCount %> review<%= reviewCount === 1 ? "" : "s" %>)
+      </p>
+    <% } else { %>
+      <p class="reviews__summary">This vehicle has not been reviewed yet.</p>
+    <% } %>
+
+    <% if (reviews && reviews.length) { %>
+      <ul class="reviews__list">
+        <% reviews.forEach(review => { %>
+          <li class="reviews__item">
+            <div class="reviews__meta">
+              <span class="reviews__reviewer"><%= review.displayName %></span>
+              <% if (review.submittedAt) { %>
+                <time datetime="<%= review.submittedAtIso %>"><%= review.submittedAt %></time>
+              <% } %>
+            </div>
+            <div
+              class="reviews__rating"
+              aria-label="Rating: <%= review.rating %> out of 5 stars"
+            >
+              <%= review.ratingStars %>
+            </div>
+            <p class="reviews__comment"><%= review.comment %></p>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <p class="reviews__empty">Be the first to share your experience with this vehicle.</p>
+    <% } %>
+
+    <% if (locals.loggedin) { %>
+      <section class="reviews__form" aria-labelledby="review-form-title">
+        <h3 id="review-form-title">Leave a review</h3>
+
+        <% if (reviewErrors && reviewErrors.length) { %>
+          <ul class="notice" role="alert">
+            <% reviewErrors.forEach(error => { %>
+              <li><%= error.msg %></li>
+            <% }) %>
+          </ul>
+        <% } %>
+
+        <form
+          action="/inv/detail/<%= inventoryId %>/reviews"
+          method="post"
+          class="form"
+          novalidate
+        >
+          <div class="form-group">
+            <label for="review_rating">Rating</label>
+            <select id="review_rating" name="rating" required>
+              <option value="">Select a rating</option>
+              <% for (let i = 1; i <= 5; i++) { %>
+                <option value="<%= i %>" <%= reviewFormData.rating == i ? "selected" : "" %>>
+                  <%= i %> <%= i === 1 ? "star" : "stars" %>
+                </option>
+              <% } %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="review_comment">Comment</label>
+            <textarea
+              id="review_comment"
+              name="comment"
+              rows="5"
+              maxlength="1000"
+              required
+            ><%= reviewFormData.comment %></textarea>
+            <p class="form-hint" role="note">
+              HTML is removed automatically. Please keep your feedback respectful.
+            </p>
+          </div>
+
+          <button class="button-primary" type="submit">Submit review</button>
+        </form>
+      </section>
+    <% } else { %>
+      <p class="reviews__signin">
+        <a href="/account/login">Log in</a> to share your review.
+      </p>
+    <% } %>
+  </section>
 </section>

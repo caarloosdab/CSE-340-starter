@@ -4,6 +4,7 @@ const router = new express.Router()
 const invController = require("../controllers/invController")
 const utilities = require("../utilities")
 const invValidation = require("../utilities/inventory-validation")
+const reviewValidation = require("../utilities/review-validation")
 
 // Management view
 router.get(
@@ -89,6 +90,14 @@ router.post(
   "/delete",
   utilities.checkEmployeeOrAdmin,
   utilities.handleErrors(invController.deleteInventoryItem)
+)
+
+router.post(
+  "/detail/:inventoryId/reviews",
+  utilities.checkLogin,
+  reviewValidation.reviewRules(),
+  reviewValidation.checkReviewData,
+  utilities.handleErrors(invController.createReview)
 )
 
 module.exports = router

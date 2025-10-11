@@ -1,7 +1,74 @@
 const invModel = require("../models/inventory-model")
+const reviewModel = require("../models/review-model")
 const utilities = require("../utilities/")
 
 const invCont = {}
+
+function escapeHtml(value = "") {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
+}
+
+function formatReviewForView(review) {
+  const firstName = (review.account_firstname || "").trim()
+  const lastName = (review.account_lastname || "").trim()
+  const displayNameBase = `${firstName} ${lastName}`.trim() || "Anonymous reviewer"
+
+  const createdAt = review.created_at instanceof Date
+    ? review.created_at
+    : new Date(review.created_at)
+
+  const createdAtValid = !Number.isNaN(createdAt.getTime())
+  const submittedAtIso = createdAtValid ? createdAt.toISOString() : ""
+  const submittedAtLabel = createdAtValid
+    ? createdAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" })
+    : ""
+
+  const rating = Number.parseInt(review.rating, 10)
+  const clampedRating = Number.isInteger(rating)
+    ? Math.min(Math.max(rating, 0), 5)
+    : 0
+  const ratingStars = "★".repeat(clampedRating) + "☆".repeat(5 - clampedRating)
+
+  return {
+    id: review.review_id,
+    rating: clampedRating,
+    ratingStars,
+    comment: escapeHtml(review.comment || ""),
+    displayName: escapeHtml(displayNameBase),
+    submittedAt: submittedAtLabel,
+    submittedAtIso,
+  }
+}
+
+function getReviewFormData(req) {
+  const sanitized = req.sanitizedReview || {}
+  const ratingValue =
+    sanitized.rating !== undefined && sanitized.rating !== null
+      ? String(sanitized.rating)
+      : ""
+
+  return {
+    rating: ratingValue,
+    comment: sanitized.comment || "",
+  }
+}
+
+function getReviewErrors(req) {
+  if (Array.isArray(req.reviewErrors) && req.reviewErrors.length) {
+    return req.reviewErrors
+  }
+
+  if (Array.isArray(req.validationErrors) && req.validationErrors.length) {
+    return req.validationErrors
+  }
+
+  return []
+}
 
 /* ***************************
  *  Build inventory management view
@@ -178,23 +245,135 @@ invCont.buildByClassificationId = async function (req, res, next) {
  * ************************** */
 
 invCont.buildByInventoryId = async function (req, res, next) {
-  const inventory_id = req.params.inventoryId
-  const vehicleData = await invModel.getInventoryById(inventory_id)
-  if (!vehicleData) {
-    const error = new Error("We could not find that vehicle.")
-    error.status = 404
-    throw error
+  const inventoryId = Number.parseInt(req.params.inventoryId, 10)
+  if (!Number.isInteger(inventoryId)) {
+    const error = new Error("Invalid vehicle id provided.")
+    error.status = 400
+    return next(error)
   }
 
-  const nav = await utilities.getNav()
-  const vehicleName = `${vehicleData.inv_make} ${vehicleData.inv_model}`
-  const detail = utilities.buildVehicleDetail(vehicleData)
+  try {
+    const vehicleData = await invModel.getInventoryById(inventoryId)
+    if (!vehicleData) {
+      const error = new Error("We could not find that vehicle.")
+      error.status = 404
+      return next(error)
+    }
 
-  res.render("./inventory/detail", {
-    title: `${vehicleData.inv_year} ${vehicleName}`,
-    nav,
-    detail,
-  })
+    const [reviewsResult, averageResult] = await Promise.allSettled([
+      reviewModel.getReviewsByInventoryId(inventoryId),
+      reviewModel.getAverageRating(inventoryId),
+    ])
+
+    let reviewRows = []
+    if (reviewsResult.status === "fulfilled") {
+      reviewRows = reviewsResult.value
+    } else {
+      console.error(
+        "buildByInventoryId failed to load reviews",
+        reviewsResult.reason
+      )
+    }
+
+    const reviews = reviewRows.map(formatReviewForView)
+
+    let reviewAverageValue = null
+    if (averageResult.status === "fulfilled") {
+      const averageRatingValue = averageResult.value
+      if (typeof averageRatingValue === "number") {
+        reviewAverageValue = averageRatingValue
+      }
+    } else {
+      console.error(
+        "buildByInventoryId failed to load review average",
+        averageResult.reason
+      )
+    }
+    const reviewAverageDisplay =
+      reviewAverageValue !== null ? reviewAverageValue.toFixed(1) : null
+
+   const nav = await utilities.getNav()
+    const vehicleName = `${vehicleData.inv_make} ${vehicleData.inv_model}`
+    const detail = utilities.buildVehicleDetail(vehicleData)
+
+    res.render("./inventory/detail", {
+      title: `${vehicleData.inv_year} ${vehicleName}`,
+      nav,
+      detail,
+      reviews,
+      reviewAverage: reviewAverageDisplay,
+      reviewAverageValue,
+      reviewCount: reviews.length,
+      inventoryId,
+      reviewErrors: getReviewErrors(req),
+      reviewFormData: getReviewFormData(req),
+    })
+  } catch (error) {
+    return next(error)
+  }
+}
+
+/* ***************************
+ *  Create a new review
+ * ************************** */
+invCont.createReview = async function (req, res, next) {
+  const inventoryId = Number.parseInt(req.params.inventoryId, 10)
+  if (!Number.isInteger(inventoryId)) {
+    const error = new Error("Invalid vehicle id provided.")
+    error.status = 400
+    return next(error)
+  }
+
+  const accountId = res.locals.accountData?.account_id
+  if (!accountId) {
+    req.flash("notice", "Please log in to leave a review.")
+    return res.redirect("/account/login")
+  }
+
+  const validationErrors = Array.isArray(req.validationErrors)
+    ? req.validationErrors
+    : []
+
+  if (validationErrors.length) {
+    req.flash("notice", "Please correct the errors in your review and try again.")
+    req.reviewErrors = validationErrors
+    res.status(400)
+    return invCont.buildByInventoryId(req, res, next)
+  }
+
+  try {
+    await reviewModel.createReview({
+      inv_id: inventoryId,
+      account_id: accountId,
+      rating: req.body.rating,
+      comment: req.body.comment,
+    })
+
+    req.flash("notice", "Thank you for submitting your review!")
+    return res.redirect(`/inv/detail/${inventoryId}#reviews`)
+  } catch (error) {
+    console.error("createReview controller error", error)
+    req.flash(
+      "notice",
+      "We ran into a problem saving your review. Please try again."
+    )
+
+    req.reviewErrors = [
+      {
+        msg: "We ran into a problem saving your review. Please try again.",
+      },
+    ]
+
+    if (!req.sanitizedReview) {
+      req.sanitizedReview = {
+        rating: String(req.body.rating || ""),
+        comment: escapeHtml(req.body.comment || ""),
+      }
+    }
+
+    res.status(500)
+    return invCont.buildByInventoryId(req, res, next)
+  }
 }
 
 /* ***************************
